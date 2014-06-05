@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <math.h>
+#include <iostream>
+#define eps 1.0e-15
+##define pi 3.141592654f
+using namespace std;
+
+//ニュートンラフソン法
+
+double f(double x)   //方程式f(x)=0のf(x)
+{
+	return x*x-2.0;
+}
+
+double df(double x)  //f(x)を微分した式
+{
+	return 2.0*x*x;
+}
+
+int main()
+{
+	double d, x0, x1, y, f0, f1, df0, mu;
+	int i = 0, n = 1000;
+	x0 = 3;                          //初期値を入力
+	f0 = f(x0);
+	df0 = df(x0);
+	cout << "初期値ｘは" << x0 << ", f(x)は " << f0 << " です。\n";
+
+	while (fabs(f0) > eps && i <= n){
+		mu = 2.0;
+		d = -f0 / df0;
+		do {
+			mu /= 2;
+			y = x0 + mu*d;
+			f1 = f(y);
+		} while (fabs(f1) > (1 - mu / 2)*fabs(f0));
+		i++;
+		x1 = y;
+		f0 = f(x1);
+		df0 = df(x1);
+		x0 = x1;
+		cout << i << "回目 xの値は" << x0 << ", そのときのf(x)の値は " << f0 << " です。\n";
+	}
+
+	cout << "解は " << x0 << "\n";
+	return 0;
+}
+
+//セカント法
+
+double f(double x)   //方程式f(x)=0のf(x)
+{
+	return x*x-2;
+}
+
+
+int main()
+{
+	double d, x0, x1, x2, y, f0, f1, f2;
+	int i = 0, n = 1000;
+	x0 = 0;                          //初期値を入力
+	x1 = 2;                          //初期値を入力
+
+	f0 = f(x0);
+	cout << "１つ目の初期値ｘは" << x0 << ", f(x)は " << f0 << " です。\n";
+	
+	f1 = f(x1);
+	cout << "２つ目の初期値ｘは" << x1 << ", f(x)は " << f1 << " です。\n";
+
+	while (fabs(f1) > eps && i <= n){
+		x2 = x1 - f1*(x1 - x0) / (f1 - f0);
+		f2 = f(x2);
+		i++;
+		x0 = x1;
+		x1 = x2;
+		f0 = f1;
+		f1 = f2;
+		cout << i << "回目 xの値は" << x1 << ", そのときのf(x)の値は " << f1 << " です。\n";
+	}
+
+	cout << "解は " << x1 << "\n";
+	return 0;
+}
+
+//定積分　シンプソン公式
+
+double Simpson(double(*f)(double x), double x0, double x1, int num);
+double f1(double x);
+double x0, x1;
+
+double f1(double x)
+{
+
+	return x;    //積分する式を入力
+}
+
+int main()
+{
+	x0 = 0;      //積分範囲を入力
+	x1 = 10;　　　//積分範囲を入力
+	printf( "計算結果：%f \n", Simpson(f1, x0, x1, 1000));
+	return 0;
+}
+
+double Simpson(double(*f)(double x), double x0, double x1, int num)
+{
+	double h;
+	double sum = 0.0, x;
+	int i;
+
+	h = (x1 - x0);
+	if (num) h /= num;
+
+	x = x0;
+
+	for (i = 0; i<num; i++){
+		sum += (*f)(x)+4.*(*f)(x + h / 2) + (*f)(x + h);
+		x += h;
+	}
+
+	return sum*h / 6;
+}
